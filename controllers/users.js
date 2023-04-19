@@ -1,5 +1,5 @@
 const User = require('../models/user');
-const { BadRequest, InternalServerError } = require('../errors/errors');
+const { BadRequest, NotFoundError, InternalServerError } = require('../errors/errors');
 
 // создаем пользователя
 module.exports.createUser = (req, res) => {
@@ -24,13 +24,13 @@ module.exports.getUsers = (req, res) => {
 // возвращаем пользователя по _id
 module.exports.getUserById = (req, res) => {
   User.findById(req.params.userId)
-    .then((user) => res.send({ data: user }))
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return res.status(BadRequest).send({ message: 'Переданы некорректные данные' });
+    .then((user) => {
+      if (!user) {
+        return res.status(NotFoundError).send({ message: 'Пользователь не найден' });
       }
-      return res.status(InternalServerError).send({ message: 'Внутренняя ошибка сервера' });
-    });
+      return res.status(200).send(user);
+    })
+    .catch(() => res.status(InternalServerError).send({ message: 'Внутренняя ошибка сервера' }));
 };
 
 // обновляем профиль

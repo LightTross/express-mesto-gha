@@ -47,13 +47,13 @@ module.exports.likeCard = (req, res) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
-    .then((card) => res.status(200).send(card))
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return res.status(BadRequest).send({ message: 'Переданы некорректные данные' });
+    .then((card) => {
+      if (!card) {
+        return res.status(NotFoundError).send({ message: 'Карточка не найдена: невозможно поставить лайк' });
       }
-      return res.status(InternalServerError).send({ message: 'Внутренняя ошибка сервера' });
-    });
+      return res.status(200).send(card);
+    })
+    .catch(() => res.status(InternalServerError).send({ message: 'Внутренняя ошибка сервера' }));
 };
 
 // удяляем лайк с карточки
@@ -63,11 +63,11 @@ module.exports.dislikeCard = (req, res) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
-    .then((card) => res.status(200).send(card))
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return res.status(BadRequest).send({ message: 'Переданы некорректные данные' });
+    .then((card) => {
+      if (!card) {
+        return res.status(NotFoundError).send({ message: 'Карточка не найдена: невозможно удалить лайк' });
       }
-      return res.status(InternalServerError).send({ message: 'Внутренняя ошибка сервера' });
-    });
+      return res.status(200).send(card);
+    })
+    .catch(() => res.status(InternalServerError).send({ message: 'Внутренняя ошибка сервера' }));
 };
