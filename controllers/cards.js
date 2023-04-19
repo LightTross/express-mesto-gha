@@ -53,7 +53,12 @@ module.exports.likeCard = (req, res) => {
       }
       return res.status(200).send(card);
     })
-    .catch(() => res.status(InternalServerError).send({ message: 'Внутренняя ошибка сервера' }));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return res.status(BadRequest).send({ message: 'Переданы некорректные данные' });
+      }
+      return res.status(InternalServerError).send({ message: 'Внутренняя ошибка сервера' });
+    });
 };
 
 // удяляем лайк с карточки
@@ -69,5 +74,10 @@ module.exports.dislikeCard = (req, res) => {
       }
       return res.status(200).send(card);
     })
-    .catch(() => res.status(InternalServerError).send({ message: 'Внутренняя ошибка сервера' }));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return res.status(BadRequest).send({ message: 'Переданы некорректные данные' });
+      }
+      return res.status(InternalServerError).send({ message: 'Внутренняя ошибка сервера' });
+    });
 };

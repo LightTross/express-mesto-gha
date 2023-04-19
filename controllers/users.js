@@ -26,13 +26,13 @@ module.exports.getUserById = (req, res) => {
   User.findById(req.params.userId)
     .then((user) => {
       if (!user) {
-        res.status(NotFoundError).send({ message: 'Пользователь не найден' });
+        return res.status(NotFoundError).send({ message: 'Переданы некорректные данные' });
       }
-      res.status(200).send(user);
+      return res.status(200).send(user);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res.status(BadRequest).send({ message: 'Переданы некорректные данные' });
+        return res.status(BadRequest).send({ message: 'Пользователь не найден' });
       }
       return res.status(InternalServerError).send({ message: 'Внутренняя ошибка сервера' });
     });
