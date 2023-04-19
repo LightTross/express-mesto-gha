@@ -26,9 +26,10 @@ module.exports.getUserById = (req, res) => {
   User.findById(req.params.userId)
     .then((user) => {
       if (!user) {
-        return res.status(NotFoundError).send({ message: 'Пользователь не найден' });
+        res.status(NotFoundError).send({ message: 'Пользователь не найден' });
+      } else {
+        res.status(200).send(user);
       }
-      return res.status(200).send(user);
     })
     .catch(() => res.status(InternalServerError).send({ message: 'Внутренняя ошибка сервера' }));
 };
