@@ -17,14 +17,19 @@ module.exports.createUser = (req, res) => {
 // возвращаем всех пользователей
 module.exports.getUsers = (req, res) => {
   User.find({})
-    .then((users) => res.status(200).send({ data: users }))
+    .then((users) => res.send({ data: users }))
     .catch(() => res.status(InternalServerError).send({ message: 'Внутренняя ошибка сервера' }));
 };
 
 // возвращаем пользователя по _id
 module.exports.getUserById = (req, res) => {
   User.findById(req.params.userId)
-    .then((user) => res.status(200).send(user))
+    .then((user) => {
+      if (!user) {
+        res.status(NotFoundError).send({ message: 'Пользователь не найден' });
+      }
+      res.status(200).send(user);
+    })
     .catch((err) => {
       if (err.name === 'CastError') {
         return res.status(BadRequest).send({ message: 'Переданы некорректные данные' });
