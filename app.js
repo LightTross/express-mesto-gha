@@ -25,8 +25,8 @@ app.post('/signup', signUpValidation, createUser);
 
 app.use(auth);
 
-app.use('/users', require('./routes/users'));
-app.use('/cards', require('./routes/cards'));
+app.use('/auth/users', require('./routes/users'));
+app.use('/auth/cards', require('./routes/cards'));
 
 app.use(errors());
 
