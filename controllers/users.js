@@ -45,14 +45,14 @@ module.exports.getCurrentUser = (req, res, next) => {
   }).catch(next);
 };
 
-// возвращаем всех пользователей
+// получаем всех пользователей
 module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send({ data: users }))
     .catch(next);
 };
 
-// возвращаем пользователя по _id
+// получаем пользователя по _id
 module.exports.getUserById = (req, res, next) => {
   User.findById(req.params.userId)
     .then((user) => {
