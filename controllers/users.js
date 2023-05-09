@@ -34,6 +34,32 @@ module.exports.createUser = (req, res, next) => {
   });
 };
 
+// Аутентификация пользователя
+module.exports.login = (req, res, next) => {
+  const { email, password } = req.body;
+  User.findOne({ email })
+    .select('+password')
+    .then((user) => {
+      if (!user) {
+        return next(new UnauthorizedError('Неверные email или пароль'));
+      }
+      return bcrypt.compare(password, user.password).then((matched) => {
+        if (!matched) {
+          return next(new UnauthorizedError('Неверные email или пароль'));
+        }
+        const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
+
+        res.cookie('Authorization', `Bearer ${token}`, {
+          maxAge: 3600000,
+          httpOnly: true,
+        });
+
+        return res.send({ token });
+      });
+    })
+    .catch(next);
+};
+
 // получаем информацию о текущем пользователе
 module.exports.getCurrentUser = (req, res, next) => {
   const { _id } = req.user;
@@ -96,30 +122,4 @@ module.exports.updateAvatar = (req, res, next) => {
       }
       return next(err);
     });
-};
-
-// Аутентификация пользователя
-module.exports.login = (req, res, next) => {
-  const { email, password } = req.body;
-  User.findOne({ email })
-    .select('+password')
-    .then((user) => {
-      if (!user) {
-        return next(new UnauthorizedError('Неверные email или пароль'));
-      }
-      return bcrypt.compare(password, user.password).then((matched) => {
-        if (!matched) {
-          return next(new UnauthorizedError('Неверные email или пароль'));
-        }
-        const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
-
-        res.cookie('Authorization', `Bearer ${token}`, {
-          maxAge: 3600000,
-          httpOnly: true,
-        });
-
-        return res.send({ token });
-      });
-    })
-    .catch(next);
 };

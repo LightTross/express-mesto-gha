@@ -7,7 +7,7 @@ module.exports = (req, res, next) => {
 
   // убеждаемся, что он есть или начинается с Bearer
   if (!authorization || !authorization.startsWith('Bearer ')) {
-    throw new UnauthorizedError('Необходима авторизация');
+    return next(new UnauthorizedError('Необходима авторизация'));
   }
 
   // извлекаем токен
@@ -18,11 +18,11 @@ module.exports = (req, res, next) => {
     // пытаемся верифицировать токен
     payload = jwt.verify(token, 'some-secret-key');
   } catch (err) {
-    throw new UnauthorizedError('Необходима авторизация');
+    next(new UnauthorizedError('Необходима авторизация'));
   }
   // записываем пейлоуд в объект запроса
   req.user = payload;
 
   // пропускаем запрос дальше
-  next();
+  return next();
 };

@@ -1,6 +1,6 @@
 const express = require('express');
-const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
+const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const { errors } = require('celebrate');
 const { NotFoundError } = require('./errors/errors');
