@@ -40,25 +40,13 @@ module.exports.createUser = (req, res, next) => {
 // Аутентификация пользователя
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
-  User.findOne({ email })
-    .select('+password')
+  return User.findUserByCredentials(email, password)
     .then((user) => {
-      if (!user) {
-        throw new UnauthorizedError('Неверные email или пароль');
-      }
-      return bcrypt.compare(password, user.password).then((matched) => {
-        if (!matched) {
-          next(new UnauthorizedError('Неверные email или пароль'));
-        }
-        const token = jwt.sign({ _id: user._id }, NODE_ENV ? JWT_SECRET : 'secret-key', { expiresIn: '7d' });
-
-        res.cookie('Authorization', `Bearer ${token}`, {
-          maxAge: 3600000,
-          httpOnly: true,
-        });
-
-        return res.send({ token });
-      });
+      const token = jwt.sign({ _id: user._id }, NODE_ENV ? JWT_SECRET : 'secret-key', { expiresIn: '7d' });
+      res.cookie('jwt', token, {
+        maxAge: 3600000,
+        httpOnly: true,
+      }).send({ jwt: token });
     })
     .catch(next);
 };
