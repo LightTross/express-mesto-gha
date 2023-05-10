@@ -32,11 +32,11 @@ app.use(auth);
 app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
 
-app.use(errors());
-
 app.use('*', (req, res) => {
   res.status(NotFoundError).send({ message: 'Страница не найдена' });
 });
+
+app.use(errors());
 
 app.use((err, req, res, next) => {
   console.log(err);
