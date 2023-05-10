@@ -1,6 +1,9 @@
+require('dotenv').config();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+
+const { NODE_ENV, JWT_SECRET } = process.env;
 const {
   UnauthorizedError,
   NotFoundError,
@@ -41,13 +44,13 @@ module.exports.login = (req, res, next) => {
     .select('+password')
     .then((user) => {
       if (!user) {
-        return next(new UnauthorizedError('Неверные email или пароль'));
+        throw new UnauthorizedError('Неверные email или пароль');
       }
       return bcrypt.compare(password, user.password).then((matched) => {
         if (!matched) {
-          return next(new UnauthorizedError('Неверные email или пароль'));
+          next(new UnauthorizedError('Неверные email или пароль'));
         }
-        const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
+        const token = jwt.sign({ _id: user._id }, NODE_ENV ? JWT_SECRET : 'secret-key', { expiresIn: '7d' });
 
         res.cookie('Authorization', `Bearer ${token}`, {
           maxAge: 3600000,
