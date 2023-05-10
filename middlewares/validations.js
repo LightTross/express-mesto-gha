@@ -13,7 +13,7 @@ const signUpValidation = celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
     password: Joi.string().required().min(8).max(24),
-    name: Joi.string(),
+    name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
     avatar: Joi.string().regex(/^(ftp|http|https):\/\/[^ "]+$/).message('Неверный url адрес'),
   }),

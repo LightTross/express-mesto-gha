@@ -43,7 +43,7 @@ app.use((err, req, res, next) => {
   const { statusCode = 500, message } = err;
 
   res.status(statusCode).send({
-    message: statusCode === 500 ? 'Внутренняя ошибка сервера' : (statusCode === 401 ? 'Необходима авторизация' : message),
+    message: statusCode === 500 ? 'Внутренняя ошибка сервера' : message,
   });
 
   next();
