@@ -24,8 +24,8 @@ mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.post('/signin', signInValidation, login);
 app.post('/signup', signUpValidation, createUser);
+app.post('/signin', signInValidation, login);
 
 app.use(auth);
 
