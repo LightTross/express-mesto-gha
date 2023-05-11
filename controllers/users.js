@@ -5,7 +5,6 @@ const User = require('../models/user');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 const {
-  UnauthorizedError,
   NotFoundError,
   ConflictError,
   BadRequestError,
@@ -31,10 +30,16 @@ module.exports.createUser = (req, res, next) => {
           });
         })
         .catch((err) => {
-          if (err.code === 11000) next(new ConflictError('Пользователь с данной почтой уже существует'));
-          else next(err);
+          if (err.name === 'ValidationError') {
+            next(new BadRequestError('Неверные данные о пользователе или неверная ссылка на аватар'));
+          } else if (err.code === 11000) {
+            next(new ConflictError('Пользователь с данной почтой уже существует'));
+          } else {
+            next(err);
+          }
         });
-    });
+    })
+    .catch(next);
 };
 
 // Аутентификация пользователя
@@ -44,7 +49,7 @@ module.exports.login = (req, res, next) => {
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, NODE_ENV ? JWT_SECRET : 'some-secret-key', { expiresIn: '7d' });
       res.cookie('jwt', token, {
-        maxAge: 3600000,
+        maxAge: 3600000 * 24 * 7,
         httpOnly: true,
       }).send({ jwt: token });
     })
@@ -56,7 +61,7 @@ module.exports.getCurrentUser = (req, res, next) => {
   const { _id } = req.user;
   User.findById(_id).then((user) => {
     if (!user) {
-      return next(new UnauthorizedError('Пользователь не найден.'));
+      return next(new NotFoundError('Пользователь не найден.'));
     }
     return res.status(200).send(user);
   }).catch(next);
@@ -92,7 +97,7 @@ module.exports.updateUser = (req, res, next) => {
     .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError('Переданы некорректные данные при обновлении профиля'));
+        return next(new BadRequestError('Переданы некорректные данные при обновлении профиля'));
       }
       return next(err);
     });
@@ -109,7 +114,7 @@ module.exports.updateAvatar = (req, res, next) => {
     .then((user) => res.status(200).send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError('Переданы некорректные данные при обновлении аватара'));
+        return next(new BadRequestError('Переданы некорректные данные при обновлении аватара'));
       }
       return next(err);
     });

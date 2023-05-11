@@ -1,4 +1,5 @@
 const { celebrate, Joi } = require('celebrate');
+const { regExp } = require('../utils/utils');
 
 // валидация аутентификации
 const signInValidation = celebrate({
@@ -15,7 +16,7 @@ const signUpValidation = celebrate({
     password: Joi.string().required().min(8).max(24),
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string().regex(/^(ftp|http|https):\/\/[^ "]+$/).message('Неверный url адрес'),
+    avatar: Joi.string().pattern(regExp).message('Неверный url адрес'),
   }),
 });
 
@@ -37,7 +38,7 @@ const updateUserValidation = celebrate({
 // валидация обновления аватара
 const updateAvatarValidation = celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().regex(/^(ftp|http|https):\/\/[^ "]+$/).message('Неверный url адрес'),
+    avatar: Joi.string().pattern(regExp).message('Неверный url адрес'),
   }),
 });
 
@@ -45,7 +46,7 @@ const updateAvatarValidation = celebrate({
 const createCardValidation = celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
-    link: Joi.string().regex(/^(ftp|http|https):\/\/[^ "]+$/).message('Неверный url адрес').required(),
+    link: Joi.string().pattern(regExp).message('Неверный url адрес').required(),
   }),
 });
 
