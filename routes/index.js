@@ -27,4 +27,4 @@ router.use('*', (req, res, next) => {
 
 router.use(errors());
 
-module.exports = router;
+module.exports = { router };

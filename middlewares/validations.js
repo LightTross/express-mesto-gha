@@ -16,7 +16,7 @@ const signUpValidation = celebrate({
     password: Joi.string().required().min(8).max(24),
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string().pattern(regExp).message('Неверный url адрес'),
+    avatar: Joi.string().pattern(regExp).message('Неверный URL адрес'),
   }),
 });
 
@@ -38,7 +38,7 @@ const updateUserValidation = celebrate({
 // валидация обновления аватара
 const updateAvatarValidation = celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().pattern(regExp).message('Неверный url адрес'),
+    avatar: Joi.string().pattern(regExp).message('Неверный URL адрес'),
   }),
 });
 
@@ -46,7 +46,7 @@ const updateAvatarValidation = celebrate({
 const createCardValidation = celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
-    link: Joi.string().pattern(regExp).message('Неверный url адрес').required(),
+    link: Joi.string().pattern(regExp).message('Неверный URL адрес').required(),
   }),
 });
 
